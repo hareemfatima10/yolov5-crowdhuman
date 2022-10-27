@@ -87,8 +87,8 @@ def detect(img,weights,img_size=640,
     #     cudnn.benchmark = True  # set True to speed up constant image size inference
     #     dataset = LoadStreams(source, img_size=imgsz, stride=stride)
     # else:
-    #     save_img = True
-    #     dataset = LoadImages(source, img_size=imgsz, stride=stride)
+    save_img = True
+    dataset = LoadImages(img, img_size=imgsz, stride=stride)
 
     # Get names and colors
     names = model.module.names if hasattr(model, 'module') else model.names
@@ -98,120 +98,119 @@ def detect(img,weights,img_size=640,
     if device.type != 'cpu':
         model(torch.zeros(1, 3, imgsz, imgsz).to(device).type_as(next(model.parameters())))  # run once
     t0 = time.time()
-    # for path, img, im0s, vid_cap in dataset:
-    
-    
-    img = letterbox(im0s, img_size=imgsz, stride=stride)[0]
-    img = torch.from_numpy(img).to(device)
-    img = img.half() if half else img.float()  # uint8 to fp16/32
-    img /= 255.0  # 0 - 255 to 0.0 - 1.0
-    if img.ndimension() == 3:
-        img = img.unsqueeze(0)
+    for path, img, im0s, vid_cap in dataset:
 
-    # Inference
-    t1 = time_synchronized()
-    pred = model(img, augment=augment)[0]
+        img = letterbox(im0s, img_size=imgsz, stride=stride)[0]
+        img = torch.from_numpy(img).to(device)
+        img = img.half() if half else img.float()  # uint8 to fp16/32
+        img /= 255.0  # 0 - 255 to 0.0 - 1.0
+        if img.ndimension() == 3:
+            img = img.unsqueeze(0)
 
-    # Apply NMS
-    pred = non_max_suppression(pred, conf_thres, iou_thres, classes=classes, agnostic=agnostic_nms)
-    t2 = time_synchronized()
+        # Inference
+        t1 = time_synchronized()
+        pred = model(img, augment=augment)[0]
 
-    # Apply Classifier
-    if classify:
-        pred = apply_classifier(pred, modelc, img, im0s)
+        # Apply NMS
+        pred = non_max_suppression(pred, conf_thres, iou_thres, classes=classes, agnostic=agnostic_nms)
+        t2 = time_synchronized()
 
-    # Process detections
-    for i, det in enumerate(pred):  # detections per image
-        if webcam:  # batch_size >= 1
-            p, s, im0, frame = path[i], '%g: ' % i, im0s[i].copy(), dataset.count
-        else:
-            p, s, im0, frame = path, '', im0s, getattr(dataset, 'frame', 0)
+        # Apply Classifier
+        if classify:
+            pred = apply_classifier(pred, modelc, img, im0s)
 
-        p = Path(p)  # to Path
-        save_path = str(save_dir / p.name)  # img.jpg
-        txt_path = str(save_dir / 'labels' / p.stem) + ('' if dataset.mode == 'image' else f'_{frame}')  # img.txt
-        s += '%gx%g ' % img.shape[2:]  # print string
-        gn = torch.tensor(im0.shape)[[1, 0, 1, 0]]  # normalization gain whwh
-        if len(det):
-            # Rescale boxes from img_size to im0 size
-            det[:, :4] = scale_coords(img.shape[2:], det[:, :4], im0.shape).round()
+        # Process detections
+        for i, det in enumerate(pred):  # detections per image
+            if webcam:  # batch_size >= 1
+                p, s, im0, frame = path[i], '%g: ' % i, im0s[i].copy(), dataset.count
+            else:
+                p, s, im0, frame = path, '', im0s, getattr(dataset, 'frame', 0)
 
-            # Print results
-            for c in det[:, -1].unique():
-                n = (det[:, -1] == c).sum()  # detections per class
-                s += f"{n} {names[int(c)]}{'s' * (n > 1)}, "  # add to string
+            p = Path(p)  # to Path
+            save_path = str(save_dir / p.name)  # img.jpg
+            txt_path = str(save_dir / 'labels' / p.stem) + ('' if dataset.mode == 'image' else f'_{frame}')  # img.txt
+            s += '%gx%g ' % img.shape[2:]  # print string
+            gn = torch.tensor(im0.shape)[[1, 0, 1, 0]]  # normalization gain whwh
+            if len(det):
+                # Rescale boxes from img_size to im0 size
+                det[:, :4] = scale_coords(img.shape[2:], det[:, :4], im0.shape).round()
 
-            # Write results
-            conf_arr = []
-            for *xyxy, conf, cls in reversed(det):
-                conf_arr.append(conf)
-            # if save_txt:  # Write to file
-            #     xywh = (xyxy2xywh(torch.tensor(xyxy).view(1, 4)) / gn).view(-1).tolist()  # normalized xywh
-            #     line = (cls, *xywh, conf) if save_conf else (cls, *xywh)  # label format
-            #     with open(txt_path + '.txt', 'a') as f:
-            #         f.write(('%g ' * len(line)).rstrip() % line + '\n')
-            conf = max(conf_arr)
-            if save_img or view_img:  # Add bbox to image
-                label = f'{names[int(cls)]} {conf:.2f}'
-                if heads or person:
-                    if 'head' in label and heads:
-                        x1 = int(xyxy[0].item())
-                        y1 = int(xyxy[1].item())
-                        x2 = int(xyxy[2].item())
-                        y2 = int(xyxy[3].item())
-                        xmin, xmax, ymin, ymax = x1, x2, y1, y2
-                        x_center = np.average([xmin, xmax])
-                        y_center = np.average([ymin, ymax])
-                        size = max(xmax-xmin, ymax-ymin)
-                        xmin, xmax = x_center-size/2, x_center+size/2
-                        ymin, ymax = y_center-size/2, y_center+size/2
-                        h, w, _ = im0.shape
-                        print(im0.shape)
-                        if xmax > w:
-                            xmin = xmin - (xmax-w)
-                            xmax = w
+                # Print results
+                for c in det[:, -1].unique():
+                    n = (det[:, -1] == c).sum()  # detections per class
+                    s += f"{n} {names[int(c)]}{'s' * (n > 1)}, "  # add to string
 
-                        if ymax > h:
-                            ymin = ymin - (ymax-h)
-                            ymax = h
-                        cropped_img = im0[int(ymin):int(ymax),int(xmin):int(xmax)]
-                        #cropped_img = im0[y1:y2, x1:x2]
-                        cv2.imwrite('test.png',cropped_img)
-                        #plot_one_box(xyxy, im0, label=label, color=colors[int(cls)], line_thickness=3)
-                    if 'person' in label and person:
+                # Write results
+                conf_arr = []
+                for *xyxy, conf, cls in reversed(det):
+                    conf_arr.append(conf)
+                # if save_txt:  # Write to file
+                #     xywh = (xyxy2xywh(torch.tensor(xyxy).view(1, 4)) / gn).view(-1).tolist()  # normalized xywh
+                #     line = (cls, *xywh, conf) if save_conf else (cls, *xywh)  # label format
+                #     with open(txt_path + '.txt', 'a') as f:
+                #         f.write(('%g ' * len(line)).rstrip() % line + '\n')
+                conf = max(conf_arr)
+                if save_img or view_img:  # Add bbox to image
+                    label = f'{names[int(cls)]} {conf:.2f}'
+                    if heads or person:
+                        if 'head' in label and heads:
+                            x1 = int(xyxy[0].item())
+                            y1 = int(xyxy[1].item())
+                            x2 = int(xyxy[2].item())
+                            y2 = int(xyxy[3].item())
+                            xmin, xmax, ymin, ymax = x1, x2, y1, y2
+                            x_center = np.average([xmin, xmax])
+                            y_center = np.average([ymin, ymax])
+                            size = max(xmax-xmin, ymax-ymin)
+                            xmin, xmax = x_center-size/2, x_center+size/2
+                            ymin, ymax = y_center-size/2, y_center+size/2
+                            h, w, _ = im0.shape
+                            print(im0.shape)
+                            if xmax > w:
+                                xmin = xmin - (xmax-w)
+                                xmax = w
+
+                            if ymax > h:
+                                ymin = ymin - (ymax-h)
+                                ymax = h
+                            cropped_img = im0[int(ymin):int(ymax),int(xmin):int(xmax)]
+                            #cropped_img = im0[y1:y2, x1:x2]
+                            cv2.imwrite('test.png',cropped_img)
+                            #plot_one_box(xyxy, im0, label=label, color=colors[int(cls)], line_thickness=3)
+                        if 'person' in label and person:
+                            plot_one_box(xyxy, im0, label=label, color=colors[int(cls)], line_thickness=3)
+                    else:
                         plot_one_box(xyxy, im0, label=label, color=colors[int(cls)], line_thickness=3)
-                else:
-                    plot_one_box(xyxy, im0, label=label, color=colors[int(cls)], line_thickness=3)
 
-        # Print time (inference + NMS)
-        print(f'{s}Done. ({t2 - t1:.3f}s)')
+            # Print time (inference + NMS)
+            print(f'{s}Done. ({t2 - t1:.3f}s)')
 
-        # Stream results
-        if view_img:
-            cv2.imshow(str(p), cropped_img)
-            cv2.waitKey(0)  # 1 millisecond
-        
-        return cropped_img
-        # Save results (image with detections)
-    #     if save_img:
-    #         if dataset.mode == 'image':
-    #             cv2.imwrite(save_path, cropped_img)
-    #         else:  # 'video'
-    #             if vid_path != save_path:  # new video
-    #                 vid_path = save_path
-    #                 if isinstance(vid_writer, cv2.VideoWriter):
-    #                     vid_writer.release()  # release previous video writer
+            # Stream results
+            if view_img:
+                cv2.imshow(str(p), cropped_img)
+                cv2.waitKey(0)  # 1 millisecond
+            
+            return cropped_img
+            # Save results (image with detections)
+        #     if save_img:
+        #         if dataset.mode == 'image':
+        #             cv2.imwrite(save_path, cropped_img)
+        #         else:  # 'video'
+        #             if vid_path != save_path:  # new video
+        #                 vid_path = save_path
+        #                 if isinstance(vid_writer, cv2.VideoWriter):
+        #                     vid_writer.release()  # release previous video writer
 
-    #                 fourcc = 'mp4v'  # output video codec
-    #                 fps = vid_cap.get(cv2.CAP_PROP_FPS)
-    #                 w = int(vid_cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-    #                 h = int(vid_cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-    #                 vid_writer = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*fourcc), fps, (w, h))
-    #             vid_writer.write(im0)
+        #                 fourcc = 'mp4v'  # output video codec
+        #                 fps = vid_cap.get(cv2.CAP_PROP_FPS)
+        #                 w = int(vid_cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+        #                 h = int(vid_cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        #                 vid_writer = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*fourcc), fps, (w, h))
+        #             vid_writer.write(im0)
 
-    # if save_txt or save_img:
-    #     s = f"\n{len(list(save_dir.glob('labels/*.txt')))} labels saved to {save_dir / 'labels'}" if save_txt else ''
-    #     print(f"Results saved to {save_dir}{s}")
+        # if save_txt or save_img:
+        #     s = f"\n{len(list(save_dir.glob('labels/*.txt')))} labels saved to {save_dir / 'labels'}" if save_txt else ''
+        #     print(f"Results saved to {save_dir}{s}")
 
     print(f'Done. ({time.time() - t0:.3f}s)')
 
