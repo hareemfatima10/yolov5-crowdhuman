@@ -240,7 +240,7 @@ def detect(img,weights,img_size=640,
     # print(opt)
     # check_requirements()
 
-def inference(img, weights, img_size=640, conf_thres=0.65, iou_thes=0.45, device="", view_img=True, 
+def inference(img, weights, img_size=640, conf_thres=0.65, iou_thres=0.45, device="", view_img=True, 
            agnostic_nms=True, classes=0,
            augment=True, update=False, exist_ok=True, person=True, heads=True):
     with torch.no_grad():
