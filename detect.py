@@ -247,8 +247,8 @@ def inference(img, weights, img_size=640, conf_thres=0.65, iou_thres=0.45, devic
         if update:  # update all models (to fix SourceChangeWarning)
             for weights in ['yolov5s.pt', 'yolov5m.pt', 'yolov5l.pt', 'yolov5x.pt']:
                 detect(img, weights, img_size, conf_thres, iou_thres, device,
-                       view_img, agnostic_nms, classes, augment, update, exist_ok, person, heads)
+                       view_img, agnostic_nms, classes, augment, update, person, heads)
                 strip_optimizer(weights)
         else:
             detect(img, weights, img_size, conf_thres, iou_thres, device,
-                       view_img, agnostic_nms, classes, augment, update, exist_ok, person, heads)
+                       view_img, agnostic_nms, classes, augment, update, person, heads)
