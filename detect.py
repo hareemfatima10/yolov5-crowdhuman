@@ -50,11 +50,11 @@ def letterbox(img, new_shape=(640, 640), color=(114, 114, 114), auto=True, scale
 
 
 
-def detect(img,weights, source, img_size=640, 
+def detect(img,weights,img_size=640, 
            conf_thres=0.25, iou_thres=0.45, device="", view_img=True, 
            classes=2, agnostic_nms=True, augment=True, update=True, 
            person=True, heads=True):
-    source, weights, view_img, imgsz = source, weights, view_img, img_size
+    weights, view_img, weights, view_img, img_size
     # webcam = source.isnumeric() or source.endswith('.txt') or source.lower().startswith(
         # ('rtsp://', 'rtmp://', 'http://'))
 
@@ -101,7 +101,7 @@ def detect(img,weights, source, img_size=640,
     # for path, img, im0s, vid_cap in dataset:
     
     
-    img = letterbox(im0s, img_size=imgsz stride=stride)[0]
+    img = letterbox(im0s, img_size=imgsz, stride=stride)[0]
     img = torch.from_numpy(img).to(device)
     img = img.half() if half else img.float()  # uint8 to fp16/32
     img /= 255.0  # 0 - 255 to 0.0 - 1.0
@@ -240,15 +240,15 @@ def detect(img,weights, source, img_size=640,
     # print(opt)
     # check_requirements()
 
-def inference(img, weights, source, img_size, conf_thres, iou_thes, device="", view_img=True, 
-           agnostic_nms=True, classes=2,
+def inference(img, weights, img_size=640, conf_thres=0.65, iou_thes=0.45, device="", view_img=True, 
+           agnostic_nms=True, classes=0,
            augment=True, update=False, exist_ok=True, person=True, heads=True):
     with torch.no_grad():
         if update:  # update all models (to fix SourceChangeWarning)
             for weights in ['yolov5s.pt', 'yolov5m.pt', 'yolov5l.pt', 'yolov5x.pt']:
-                detect(img, weights, source, img_size, conf_thres, iou_thres, device,
-                       view_img, agnostic_nms, classes augment, update, exist_ok, person, heads)
+                detect(img, weights, img_size, conf_thres, iou_thres, device,
+                       view_img, agnostic_nms, classes, augment, update, exist_ok, person, heads)
                 strip_optimizer(weights)
         else:
-            detect(img, weights, source, img_size, conf_thres, iou_thres, device,
-                       view_img, agnostic_nms, classes augment, update, exist_ok, person, heads)
+            detect(img, weights, img_size, conf_thres, iou_thres, device,
+                       view_img, agnostic_nms, classes, augment, update, exist_ok, person, heads)
