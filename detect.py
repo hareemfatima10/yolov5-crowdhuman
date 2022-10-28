@@ -141,7 +141,7 @@ def detect(source,weights,imgsz=640,
                                     ymax = h
                                 cropped_img = im0[int(ymin):int(ymax),int(xmin):int(xmax)]
                                 #cropped_img = im0[y1:y2, x1:x2]
-                                cv2.imwrite('test.png',cropped_img)
+                                cv2.imwrite('test3.png',cropped_img)
                                 #plot_one_box(xyxy, im0, label=label, color=colors[int(cls)], line_thickness=3)
                             if 'person' in label and person:
                                 plot_one_box(xyxy, im0, label=label, color=colors[int(cls)], line_thickness=3)
@@ -151,10 +151,10 @@ def detect(source,weights,imgsz=640,
             # Print time (inference + NMS)
             print(f'{s}Done. ({t2 - t1:.3f}s)')
 
-            # Stream results
-            if view_img:
-                cv2.imshow(str(p), cropped_img)
-                cv2.waitKey(0)  # 1 millisecond
+            # # Stream results
+            # if view_img:
+            #     cv2.imshow(str(p), cropped_img)
+            #     cv2.waitKey(0)  # 1 millisecond
             
             return cropped_img
             # Save results (image with detections)
