@@ -1,7 +1,7 @@
 import argparse
 import time
 from pathlib import Path
-
+from google.colab.patches import cv2_imshow
 import cv2
 import numpy as np
 import torch
@@ -132,7 +132,6 @@ def detect(source,weights,imgsz=640,
                                 xmin, xmax = x_center-size/2, x_center+size/2
                                 ymin, ymax = y_center-size/2, y_center+size/2
                                 h, w, _ = im0.shape
-                                print("Line 134")
                                 if xmax > w:
                                     xmin = xmin - (xmax-w)
                                     xmax = w
@@ -152,10 +151,10 @@ def detect(source,weights,imgsz=640,
             # Print time (inference + NMS)
             print(f'{s}Done. ({t2 - t1:.3f}s)')
 
-            # # Stream results
-            # if view_img:
-            #     cv2.imshow(str(p), cropped_img)
-            #     cv2.waitKey(0)  # 1 millisecond
+            # Stream results
+            if view_img:
+                cv2_imshow(str(p), cropped_img)
+                cv2.waitKey(0)  # 1 millisecond
             
             
             # Save results (image with detections)
