@@ -68,7 +68,7 @@ def detect(source,weights,imgsz=640,
     if device.type != 'cpu':
         model(torch.zeros(1, 3, imgsz, imgsz).to(device).type_as(next(model.parameters())))  # run once
     t0 = time.time()
-    for path, img, im0s, vid_cap in dataset:
+    for img, im0s in dataset:
         img = torch.from_numpy(img).to(device)
         img = img.half() if half else img.float()  # uint8 to fp16/32
         img /= 255.0  # 0 - 255 to 0.0 - 1.0
@@ -92,7 +92,7 @@ def detect(source,weights,imgsz=640,
             # if webcam:  # batch_size >= 1
             #     p, s, im0, frame = path[i], '%g: ' % i, im0s[i].copy(), dataset.count
             # else:
-            p, s, im0, frame = path, '', im0s, getattr(dataset, 'frame', 0)
+            p, s, im0, im0s, getattr(dataset, 'frame', 0)
 
             p = Path(p)  # to Path
             save_path = str(save_dir)
@@ -157,23 +157,10 @@ def detect(source,weights,imgsz=640,
                 cv2.waitKey(0)  # 1 millisecond
             
             
-            # Save results (image with detections)
-        #     if save_img:
-        #         if dataset.mode == 'image':
-        #             cv2.imwrite(save_path, cropped_img)
-        #         else:  # 'video'
-        #             if vid_path != save_path:  # new video
-        #                 vid_path = save_path
-        #                 if isinstance(vid_writer, cv2.VideoWriter):
-        #                     vid_writer.release()  # release previous video writer
-
-        #                 fourcc = 'mp4v'  # output video codec
-        #                 fps = vid_cap.get(cv2.CAP_PROP_FPS)
-        #                 w = int(vid_cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-        #                 h = int(vid_cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-        #                 vid_writer = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*fourcc), fps, (w, h))
-        #             vid_writer.write(im0)
-
+        #Save results (image with detections)
+            if save_img:
+                if dataset.mode == 'image':
+                    cv2.imwrite(save_path, cropped_img)
         # if save_txt or save_img:
         #     s = f"\n{len(list(save_dir.glob('labels/*.txt')))} labels saved to {save_dir / 'labels'}" if save_txt else ''
         #     print(f"Results saved to {save_dir}{s}")
