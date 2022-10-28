@@ -107,6 +107,7 @@ def detect(source,weights,imgsz=640,
                     n = (det[:, -1] == c).sum()  # detections per class
                     s += f"{n} {names[int(c)]}{'s' * (n > 1)}, "  # add to string
                 save_conf = True
+                save_img = True
                 # Write results
                 for *xyxy, conf, cls in reversed(det):
                     if save_txt:  # Write to file
@@ -155,13 +156,14 @@ def detect(source,weights,imgsz=640,
             if view_img:
                 cv2.imshow(str(p), cropped_img)
                 cv2.waitKey(0)  # 1 millisecond
+            # Save results (image with detections)
+            if save_img:
+              if dataset.mode == 'image':
+                cv2.imwrite(save_path, cropped_img)
             
             return cropped_img
 
-#             # Save results (image with detections)
-#             if save_img:
-#                 if dataset.mode == 'image':
-#                     cv2.imwrite(save_path, im0)
+
 #                 else:  # 'video'
 #                     if vid_path != save_path:  # new video
 #                         vid_path = save_path
