@@ -15,11 +15,11 @@ from utils.plots import plot_one_box
 from utils.torch_utils import select_device, load_classifier, time_synchronized
 
 
-def detect(source,weights,img_size=640, 
+def detect(source,weights,imgsz=640, 
            conf_thres=0.25, iou_thres=0.45, device="", view_img=True, 
            classes=2,project='runs/detect',name = 'exp', agnostic_nms=True, augment=True, update=True, 
-           exist_ok =True, person=True, heads=True):
-    source, weights, view_img, save_txt, imgsz = source, weights, view_img, save_txt, img_size
+           exist_ok =True, person=True, heads=True, save_txt =False):
+    source, weights, view_img, save_txt, imgsz
     # webcam = source.isnumeric() or source.endswith('.txt') or source.lower().startswith(
     #     ('rtsp://', 'rtmp://', 'http://'))
 
@@ -155,13 +155,13 @@ def detect(source,weights,img_size=640,
 
 def inference(weights, source, img_size=640, conf_thres=0.65, iou_thres=0.45, device="", view_img=True, 
            agnostic_nms=True, classes=0, project='runs/detect', name = 'exp',
-           augment=True, update=False, exist_ok=True, person=True, heads=True):
+           augment=True, update=False, exist_ok=True, person=True, heads=True, save_txt =False):
     with torch.no_grad():
         if update:  # update all models (to fix SourceChangeWarning)
             for weights in ['yolov5s.pt', 'yolov5m.pt', 'yolov5l.pt', 'yolov5x.pt']:
                 detect(source, weights, img_size, conf_thres, iou_thres, device,
-                       view_img, agnostic_nms, classes, project, name, augment, update, exist_ok, person, heads)
+                       view_img, agnostic_nms, classes, project, name, augment, update, exist_ok, person, heads, save_txt)
                 strip_optimizer(weights)
         else:
             detect(source, weights, img_size, conf_thres, iou_thres, device,
-                       view_img, agnostic_nms, classes,project, name, augment, update,exist_ok, person, heads)
+                       view_img, agnostic_nms, classes,project, name, augment, update,exist_ok, person, heads,save_txt)
