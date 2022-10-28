@@ -3,6 +3,7 @@ import time
 from pathlib import Path
 
 import cv2
+from google.colab.patches import cv2_imshow
 import torch
 import torch.backends.cudnn as cudnn
 from numpy import random
@@ -129,7 +130,7 @@ def detect(source,weights,imgsz=640,
 
             # Stream results
             if view_img:
-                cv2.imshow(str(p), im0)
+                cv2.im_show(str(p), im0)
                 cv2.waitKey(0)  # 1 millisecond
 
             # Save results (image with detections)
