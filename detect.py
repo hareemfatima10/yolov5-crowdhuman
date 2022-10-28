@@ -118,7 +118,7 @@ def detect(source,weights,imgsz=640,
 
                     if save_img or view_img:  # Add bbox to image
                         label = f'{names[int(cls)]} {conf:.2f}'
-                        print(f'{label})
+                        print(label)
                         if heads or person:
                             if 'head' in label and heads:
                                 x1 = int(xyxy[0].item())
