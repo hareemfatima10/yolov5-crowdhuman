@@ -28,8 +28,8 @@ def detect(source,weights,imgsz=640,
     # save_dir = os.path.join(current_directory, r'results')
     # if not os.path.exists(save_dir):
     #     os.makedirs(save_dir)
-    save_dir = Path(increment_path(Path(project) / name, exist_ok))  # increment run
-    (save_dir / 'labels' if save_txt else save_dir).mkdir(parents=True, exist_ok=True)  # make dir
+#     save_dir = Path(increment_path(Path(project) / name, exist_ok))  # increment run
+#     (save_dir / 'labels' if save_txt else save_dir).mkdir(parents=True, exist_ok=True)  # make dir
 
     # Initialize
     set_logging()
