@@ -24,7 +24,7 @@ def detect(source,weights,imgsz=640,
     #     ('rtsp://', 'rtmp://', 'http://'))
 
     # Directories
-    save_dir = /runs/detect' 
+    save_dir = '/runs/detect' 
     (save_dir / 'labels' if save_txt else save_dir).mkdir(parents=True, exist_ok=True)  # make dir
 
     # Initialize
