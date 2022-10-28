@@ -119,69 +119,68 @@ def detect(source,weights,imgsz=640,
                     if save_img or view_img:  # Add bbox to image
                         label = f'{names[int(cls)]} {conf:.2f}'
                         if heads or person:
-                            if 'head' in label and heads:
-                                print('line 123')
-                                x1 = int(xyxy[0].item())
-                                y1 = int(xyxy[1].item())
-                                x2 = int(xyxy[2].item())
-                                y2 = int(xyxy[3].item())
-                                xmin, xmax, ymin, ymax = x1, x2, y1, y2
-                                x_center = np.average([xmin, xmax])
-                                y_center = np.average([ymin, ymax])
-                                size = max(xmax-xmin, ymax-ymin)
-                                xmin, xmax = x_center-size/2, x_center+size/2
-                                ymin, ymax = y_center-size/2, y_center+size/2
-                                h, w, _ = im0.shape
-                                if xmax > w:
-                                    xmin = xmin - (xmax-w)
-                                    xmax = w
+                        if 'head' in label and heads:
+                            x1 = int(xyxy[0].item())
+                            y1 = int(xyxy[1].item())
+                            x2 = int(xyxy[2].item())
+                            y2 = int(xyxy[3].item())
+                            xmin, xmax, ymin, ymax = x1, x2, y1, y2
+                            x_center = np.average([xmin, xmax])
+                            y_center = np.average([ymin, ymax])
+                            size = max(xmax-xmin, ymax-ymin)
+                            xmin, xmax = x_center-size/2, x_center+size/2
+                            ymin, ymax = y_center-size/2, y_center+size/2
+                            h, w, _ = im0.shape
+                            print(im0.shape)
+                            if xmax > w:
+                                xmin = xmin - (xmax-w)
+                                xmax = w
 
-                                if ymax > h:
-                                    ymin = ymin - (ymax-h)
-                                    ymax = h
-                                cropped_img = im0[int(ymin):int(ymax),int(xmin):int(xmax)]
-                                #cropped_img = im0[y1:y2, x1:x2]
-                                cv2.imwrite('test6.png',cropped_img)
-                                #plot_one_box(xyxy, im0, label=label, color=colors[int(cls)], line_thickness=3)
-                            if 'person' in label and person:
-                                plot_one_box(xyxy, im0, label=label, color=colors[int(cls)], line_thickness=3)
-                        else:
+                            if ymax > h:
+                                ymin = ymin - (ymax-h)
+                                ymax = h
+                            cropped_img = im0[int(ymin):int(ymax),int(xmin):int(xmax)]
+                            #cropped_img = im0[y1:y2, x1:x2]
+                            cv2.imwrite('test.png',cropped_img)
+                            #plot_one_box(xyxy, im0, label=label, color=colors[int(cls)], line_thickness=3)
+                        if 'person' in label and person:
                             plot_one_box(xyxy, im0, label=label, color=colors[int(cls)], line_thickness=3)
-
+                    else:
+                        plot_one_box(xyxy, im0, label=label, color=colors[int(cls)], line_thickness=3)
 
             # Print time (inference + NMS)
             print(f'{s}Done. ({t2 - t1:.3f}s)')
-            return cropped_img
+
             # Stream results
             if view_img:
                 cv2.imshow(str(p), cropped_img)
                 cv2.waitKey(0)  # 1 millisecond
+            
+            return cropped_img
             # Save results (image with detections)
-            # if save_img:
-            #   if dataset.mode == 'image':
-            #     cv2.imwrite('test2.png', cropped_img)
-            
-            
+        #     if save_img:
+        #         if dataset.mode == 'image':
+        #             cv2.imwrite(save_path, cropped_img)
+        #         else:  # 'video'
+        #             if vid_path != save_path:  # new video
+        #                 vid_path = save_path
+        #                 if isinstance(vid_writer, cv2.VideoWriter):
+        #                     vid_writer.release()  # release previous video writer
 
+        #                 fourcc = 'mp4v'  # output video codec
+        #                 fps = vid_cap.get(cv2.CAP_PROP_FPS)
+        #                 w = int(vid_cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+        #                 h = int(vid_cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        #                 vid_writer = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*fourcc), fps, (w, h))
+        #             vid_writer.write(im0)
 
-#                 else:  # 'video'
-#                     if vid_path != save_path:  # new video
-#                         vid_path = save_path
-#                         if isinstance(vid_writer, cv2.VideoWriter):
-#                             vid_writer.release()  # release previous video writer
-
-#                         fourcc = 'mp4v'  # output video codec
-#                         fps = vid_cap.get(cv2.CAP_PROP_FPS)
-#                         w = int(vid_cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-#                         h = int(vid_cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-#                         vid_writer = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*fourcc), fps, (w, h))
-#                     vid_writer.write(im0)
-
-#     if save_txt or save_img:
-#         s = f"\n{len(list(save_dir.glob('labels/*.txt')))} labels saved to {save_dir / 'labels'}" if save_txt else ''
-#         print(f"Results saved to {save_dir}{s}")
+        # if save_txt or save_img:
+        #     s = f"\n{len(list(save_dir.glob('labels/*.txt')))} labels saved to {save_dir / 'labels'}" if save_txt else ''
+        #     print(f"Results saved to {save_dir}{s}")
 
     print(f'Done. ({time.time() - t0:.3f}s)')
+
+
 
 
 def inference(source, weights, img_size=640, conf_thres=0.65, iou_thres=0.45, device="", view_img=True, 
