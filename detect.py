@@ -95,7 +95,7 @@ def detect(source,weights,imgsz=640,
             p, s, im0, frame = path, '', im0s, getattr(dataset, 'frame', 0)
 
             p = Path(p)  # to Path
-            save_path = str(save_dir)  # img.jpg
+            save_path = str(save_dir)
             s += '%gx%g ' % img.shape[2:]  # print string
             gn = torch.tensor(im0.shape)[[1, 0, 1, 0]]  # normalization gain whwh
             if len(det):
@@ -118,6 +118,7 @@ def detect(source,weights,imgsz=640,
 
                     if save_img or view_img:  # Add bbox to image
                         label = f'{names[int(cls)]} {conf:.2f}'
+                        print(f'{label})
                         if heads or person:
                             if 'head' in label and heads:
                                 x1 = int(xyxy[0].item())
@@ -131,7 +132,7 @@ def detect(source,weights,imgsz=640,
                                 xmin, xmax = x_center-size/2, x_center+size/2
                                 ymin, ymax = y_center-size/2, y_center+size/2
                                 h, w, _ = im0.shape
-                                print(im0.shape)
+                                print("Line 134")
                                 if xmax > w:
                                     xmin = xmin - (xmax-w)
                                     xmax = w
@@ -141,7 +142,7 @@ def detect(source,weights,imgsz=640,
                                     ymax = h
                                 cropped_img = im0[int(ymin):int(ymax),int(xmin):int(xmax)]
                                 #cropped_img = im0[y1:y2, x1:x2]
-                                #cv2.imwrite('test3.png',cropped_img)
+                                cv2.imwrite('test3.png',cropped_img)
                                 #plot_one_box(xyxy, im0, label=label, color=colors[int(cls)], line_thickness=3)
                             if 'person' in label and person:
                                 plot_one_box(xyxy, im0, label=label, color=colors[int(cls)], line_thickness=3)
