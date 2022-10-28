@@ -153,7 +153,7 @@ def detect(source,weights,imgsz=640,
 
             # Stream results
             if view_img:
-                cv2_imshow(str(p), cropped_img)
+                cv2_imshow(cropped_img)
                 cv2.waitKey(0)  # 1 millisecond
             
             
