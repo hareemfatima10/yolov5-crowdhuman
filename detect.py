@@ -1,7 +1,6 @@
 import argparse
 import time
 from pathlib import Path
-from google.colab.patches import cv2_imshow
 import cv2
 import numpy as np
 import torch

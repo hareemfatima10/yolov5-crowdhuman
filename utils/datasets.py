@@ -120,10 +120,11 @@ class _RepeatSampler(object):
 
 
 class LoadImages:  # for inference
-    def __init__(self, np_arr, img_size=640, stride=32):
+    def __init__(self, img_np, img_size=640, stride=32):
 
         self.img_size = img_size
         self.stride = stride
+        self.img_np = img_np
         
     def __iter__(self):
         self.count = 0
@@ -131,7 +132,7 @@ class LoadImages:  # for inference
 
     def __next__(self):
         # Read image
-        img0 = np_arr # BGR
+        img0 = self.img_np # BGR
         assert img0 is not None, 'Image Not Found '
         #print(f'image {self.count}/{self.nf} {path}: ', end='')
 
