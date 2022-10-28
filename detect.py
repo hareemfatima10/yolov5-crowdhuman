@@ -157,6 +157,7 @@ def detect(source,weights,imgsz=640,
                 cv2.imshow(str(p), cropped_img)
                 cv2.waitKey(0)  # 1 millisecond
             # Save results (image with detections)
+            print(dataset.mode)
             if save_img:
               if dataset.mode == 'image':
                 cv2.imwrite('test2.png', cropped_img)
