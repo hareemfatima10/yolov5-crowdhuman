@@ -130,12 +130,11 @@ class LoadImages:  # for inference
         return self
 
     def __next__(self):
-        if self.count == self.nf:
-            raise StopIteration
-        path = self.files[self.count]
+        # if self.count == self.nf:
+        #     raise StopIteration
+        # path = self.files[self.count]
 
         # Read image
-        self.count += 1
         img0 = np_arr # BGR
         assert img0 is not None, 'Image Not Found '
         #print(f'image {self.count}/{self.nf} {path}: ', end='')
