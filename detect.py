@@ -120,6 +120,7 @@ def detect(source,weights,imgsz=640,
                         label = f'{names[int(cls)]} {conf:.2f}'
                         if heads or person:
                             if 'head' in label and heads:
+                                print('line 123')
                                 x1 = int(xyxy[0].item())
                                 y1 = int(xyxy[1].item())
                                 x2 = int(xyxy[2].item())
