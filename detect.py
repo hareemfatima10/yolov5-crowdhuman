@@ -1,4 +1,3 @@
-%%writefile detect.py
 import argparse
 import time
 from pathlib import Path
