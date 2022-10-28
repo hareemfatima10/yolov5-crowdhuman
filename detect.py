@@ -132,7 +132,6 @@ def detect(source,weights,imgsz=640,
                                 xmin, xmax = x_center-size/2, x_center+size/2
                                 ymin, ymax = y_center-size/2, y_center+size/2
                                 h, w, _ = im0.shape
-                                print(im0.shape)
                                 if xmax > w:
                                     xmin = xmin - (xmax-w)
                                     xmax = w
@@ -160,7 +159,7 @@ def detect(source,weights,imgsz=640,
             # Save results (image with detections)
             if save_img:
               if dataset.mode == 'image':
-                cv2.imwrite(save_path, cropped_img)
+                cv2.imwrite('test2.png', cropped_img)
             
             return cropped_img
 
