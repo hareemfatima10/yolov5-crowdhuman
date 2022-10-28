@@ -91,7 +91,7 @@ def detect(source,weights,imgsz=640,
             # if webcam:  # batch_size >= 1
             #     p, s, im0, frame = path[i], '%g: ' % i, im0s[i].copy(), dataset.count
             # else:
-            s, im0, im0s, getattr(dataset, 'frame', 0)
+            s, im0, frame = '', im0s, getattr(dataset, 'frame', 0)
 
             #p = Path(p)  # to Path
             save_path = str(save_dir)
