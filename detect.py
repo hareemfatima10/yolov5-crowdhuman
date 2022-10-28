@@ -23,13 +23,13 @@ def detect(source,weights,imgsz=640,
     # webcam = source.isnumeric() or source.endswith('.txt') or source.lower().startswith(
     #     ('rtsp://', 'rtmp://', 'http://'))
 
-    # # Directories
-    # current_directory = os.getcwd()
-    # save_dir = os.path.join(current_directory, r'results')
-    # if not os.path.exists(save_dir):
-    #     os.makedirs(save_dir)
-#     save_dir = Path(increment_path(Path(project) / name, exist_ok))  # increment run
-#     (save_dir / 'labels' if save_txt else save_dir).mkdir(parents=True, exist_ok=True)  # make dir
+    # Directories
+    current_directory = os.getcwd()
+    save_dir = os.path.join(current_directory, r'results')
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+    # save_dir = Path(increment_path(Path(project) / name, exist_ok))  # increment run
+    # (save_dir / 'labels' if save_txt else save_dir).mkdir(parents=True, exist_ok=True)  # make dir
 
     # Initialize
     set_logging()
@@ -157,7 +157,7 @@ def detect(source,weights,imgsz=640,
     print(f'Done. ({time.time() - t0:.3f}s)')
 
 
-def inference(weights, source, img_size=640, conf_thres=0.65, iou_thres=0.45, device="", view_img=True, 
+def inference(source, weights, img_size=640, conf_thres=0.65, iou_thres=0.45, device="", view_img=True, 
            agnostic_nms=True, classes=0, project='runs/detect', name = 'exp',
            augment=True, update=False, exist_ok=False, person=True, heads=True, save_txt =False):
     with torch.no_grad():
