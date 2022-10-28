@@ -18,18 +18,18 @@ from utils.torch_utils import select_device, load_classifier, time_synchronized
 def detect(source,weights,imgsz=640, 
            conf_thres=0.25, iou_thres=0.45, device="", view_img=True, 
            classes=2,project='runs/detect',name = 'exp', agnostic_nms=True, augment=True, update=True, 
-           exist_ok =True, person=True, heads=True, save_txt =False):
+           exist_ok =False, person=True, heads=True, save_txt =False):
     source, weights, view_img, save_txt, imgsz
     # webcam = source.isnumeric() or source.endswith('.txt') or source.lower().startswith(
     #     ('rtsp://', 'rtmp://', 'http://'))
 
-    # Directories
-    current_directory = os.getcwd()
-    save_dir = os.path.join(current_directory, r'results')
-    if not os.path.exists(save_dir):
-        os.makedirs(save_dir)
-    # save_dir = Path(increment_path(Path(project) / name, exist_ok))  # increment run
-    # (save_dir / 'labels' if save_txt else save_dir).mkdir(parents=True, exist_ok=True)  # make dir
+    # # Directories
+    # current_directory = os.getcwd()
+    # save_dir = os.path.join(current_directory, r'results')
+    # if not os.path.exists(save_dir):
+    #     os.makedirs(save_dir)
+    save_dir = Path(increment_path(Path(project) / name, exist_ok))  # increment run
+    (save_dir / 'labels' if save_txt else save_dir).mkdir(parents=True, exist_ok=True)  # make dir
 
     # Initialize
     set_logging()
@@ -159,7 +159,7 @@ def detect(source,weights,imgsz=640,
 
 def inference(weights, source, img_size=640, conf_thres=0.65, iou_thres=0.45, device="", view_img=True, 
            agnostic_nms=True, classes=0, project='runs/detect', name = 'exp',
-           augment=True, update=False, exist_ok=True, person=True, heads=True, save_txt =False):
+           augment=True, update=False, exist_ok=False, person=True, heads=True, save_txt =False):
     with torch.no_grad():
         if update:  # update all models (to fix SourceChangeWarning)
             for weights in ['yolov5s.pt', 'yolov5m.pt', 'yolov5l.pt', 'yolov5x.pt']:
