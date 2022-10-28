@@ -130,7 +130,7 @@ def detect(source,weights,imgsz=640,
 
             # Stream results
             if view_img:
-                cv2_im_show(str(p), im0)
+                cv2_imshow(str(p), im0)
                 cv2.waitKey(0)  # 1 millisecond
 
             # Save results (image with detections)
