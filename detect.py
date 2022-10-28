@@ -91,9 +91,9 @@ def detect(source,weights,imgsz=640,
             # if webcam:  # batch_size >= 1
             #     p, s, im0, frame = path[i], '%g: ' % i, im0s[i].copy(), dataset.count
             # else:
-            p, s, im0, im0s, getattr(dataset, 'frame', 0)
+            s, im0, im0s, getattr(dataset, 'frame', 0)
 
-            p = Path(p)  # to Path
+            #p = Path(p)  # to Path
             save_path = str(save_dir)
             s += '%gx%g ' % img.shape[2:]  # print string
             gn = torch.tensor(im0.shape)[[1, 0, 1, 0]]  # normalization gain whwh
