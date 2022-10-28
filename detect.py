@@ -141,7 +141,7 @@ def detect(source,weights,imgsz=640,
                                     ymax = h
                                 cropped_img = im0[int(ymin):int(ymax),int(xmin):int(xmax)]
                                 #cropped_img = im0[y1:y2, x1:x2]
-                                cv2.imwrite('test3.png',cropped_img)
+                                #cv2.imwrite('test3.png',cropped_img)
                                 #plot_one_box(xyxy, im0, label=label, color=colors[int(cls)], line_thickness=3)
                             if 'person' in label and person:
                                 plot_one_box(xyxy, im0, label=label, color=colors[int(cls)], line_thickness=3)
@@ -156,7 +156,7 @@ def detect(source,weights,imgsz=640,
             #     cv2.imshow(str(p), cropped_img)
             #     cv2.waitKey(0)  # 1 millisecond
             
-            return cropped_img
+            
             # Save results (image with detections)
         #     if save_img:
         #         if dataset.mode == 'image':
@@ -177,9 +177,9 @@ def detect(source,weights,imgsz=640,
         # if save_txt or save_img:
         #     s = f"\n{len(list(save_dir.glob('labels/*.txt')))} labels saved to {save_dir / 'labels'}" if save_txt else ''
         #     print(f"Results saved to {save_dir}{s}")
-
+    
     print(f'Done. ({time.time() - t0:.3f}s)')
-
+    return cropped_img
 
 
 
