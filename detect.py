@@ -88,7 +88,7 @@ def detect(img,weights,img_size=640,
     #     dataset = LoadStreams(source, img_size=imgsz, stride=stride)
     # else:
     save_img = True
-    dataset = LoadImages(img, img_size=imgsz, stride=stride)
+    dataset = LoadImages(img, imgsz, stride=stride)
 
     # Get names and colors
     names = model.module.names if hasattr(model, 'module') else model.names
@@ -100,7 +100,7 @@ def detect(img,weights,img_size=640,
     t0 = time.time()
     for path, img, im0s, vid_cap in dataset:
 
-        img = letterbox(im0s, img_size=imgsz, stride=stride)[0]
+        img = letterbox(img, imgsz, stride=stride)[0]
         img = torch.from_numpy(img).to(device)
         img = img.half() if half else img.float()  # uint8 to fp16/32
         img /= 255.0  # 0 - 255 to 0.0 - 1.0
