@@ -159,8 +159,7 @@ def detect(source,weights,imgsz=640,
             
         #Save results (image with detections)
             if save_img:
-                if dataset.mode == 'image':
-                    cv2.imwrite(save_path, cropped_img)
+                cv2.imwrite(save_path, cropped_img)
         # if save_txt or save_img:
         #     s = f"\n{len(list(save_dir.glob('labels/*.txt')))} labels saved to {save_dir / 'labels'}" if save_txt else ''
         #     print(f"Results saved to {save_dir}{s}")
