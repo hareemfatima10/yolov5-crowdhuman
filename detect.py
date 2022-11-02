@@ -17,7 +17,7 @@ from utils.torch_utils import select_device, load_classifier, time_synchronized
 
 
 def detect(source,weights,imgsz=640, 
-           conf_thres=0.25, iou_thres=0.45, device="", view_img=False, save_img=True
+           conf_thres=0.25, iou_thres=0.45, device="", view_img=False, save_img=True,
            classes=2,project='runs/detect',name = 'exp', agnostic_nms=True, augment=True, update=True, 
            exist_ok =False, person=True, heads=True, save_txt =False):
     source, weights, view_img, save_txt, imgsz
@@ -57,7 +57,7 @@ def detect(source,weights,imgsz=640,
     #     cudnn.benchmark = True  # set True to speed up constant image size inference
     #     dataset = LoadStreams(source, img_size=imgsz, stride=stride)
     # else:
-    save_img = True
+    
     dataset = LoadImages(source, img_size=imgsz, stride=stride)
 
     # Get names and colors
