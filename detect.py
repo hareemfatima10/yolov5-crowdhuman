@@ -57,7 +57,7 @@ def detect(source,weights,imgsz=640,
     #     cudnn.benchmark = True  # set True to speed up constant image size inference
     #     dataset = LoadStreams(source, img_size=imgsz, stride=stride)
     # else:
-    
+    save_img = True
     dataset = LoadImages(source, img_size=imgsz, stride=stride)
 
     # Get names and colors
@@ -68,7 +68,7 @@ def detect(source,weights,imgsz=640,
     if device.type != 'cpu':
         model(torch.zeros(1, 3, imgsz, imgsz).to(device).type_as(next(model.parameters())))  # run once
     t0 = time.time()
-    for img, im0s in dataset:
+    for path, img, im0s in dataset:
         img = torch.from_numpy(img).to(device)
         img = img.half() if half else img.float()  # uint8 to fp16/32
         img /= 255.0  # 0 - 255 to 0.0 - 1.0
@@ -92,10 +92,10 @@ def detect(source,weights,imgsz=640,
             # if webcam:  # batch_size >= 1
             #     p, s, im0, frame = path[i], '%g: ' % i, im0s[i].copy(), dataset.count
             # else:
-            s, im0, frame = '', im0s, getattr(dataset, 'frame', 0)
+            p, s, im0, frame = path, '', im0s, getattr(dataset, 'frame', 0)
 
-            #p = Path(p)  # to Path
-            save_path = str(save_dir)
+            p = Path(p)  # to Path
+            save_path = str(save_dir / p.name)  # img.jpg
             s += '%gx%g ' % img.shape[2:]  # print string
             gn = torch.tensor(im0.shape)[[1, 0, 1, 0]]  # normalization gain whwh
             if len(det):
@@ -110,15 +110,14 @@ def detect(source,weights,imgsz=640,
                 save_img = True
                 # Write results
                 for *xyxy, conf, cls in reversed(det):
-                    if save_txt:  # Write to file
-                        xywh = (xyxy2xywh(torch.tensor(xyxy).view(1, 4)) / gn).view(-1).tolist()  # normalized xywh
-                        line = (cls, *xywh, conf) if save_conf else (cls, *xywh)  # label format
-                        with open(txt_path + '.txt', 'a') as f:
-                            f.write(('%g ' * len(line)).rstrip() % line + '\n')
+                    # if save_txt:  # Write to file
+                    #     xywh = (xyxy2xywh(torch.tensor(xyxy).view(1, 4)) / gn).view(-1).tolist()  # normalized xywh
+                    #     line = (cls, *xywh, conf) if save_conf else (cls, *xywh)  # label format
+                    #     with open(txt_path + '.txt', 'a') as f:
+                    #         f.write(('%g ' * len(line)).rstrip() % line + '\n')
 
                     if save_img or view_img:  # Add bbox to image
                         label = f'{names[int(cls)]} {conf:.2f}'
-                        print(label)
                         if heads or person:
                             if 'head' in label and heads:
                                 x1 = int(xyxy[0].item())
@@ -128,7 +127,7 @@ def detect(source,weights,imgsz=640,
                                 xmin, xmax, ymin, ymax = x1, x2, y1, y2
                                 x_center = np.average([xmin, xmax])
                                 y_center = np.average([ymin, ymax])
-                                size = max(xmax-xmin, ymax-ymin)
+                                size = max(xmax-xmin, ymax-ymin)*1.5
                                 xmin, xmax = x_center-size/2, x_center+size/2
                                 ymin, ymax = y_center-size/2, y_center+size/2
                                 h, w, _ = im0.shape
