@@ -26,7 +26,7 @@ def detect(source,weights,imgsz=640,
 
     # Directories
     current_directory = os.getcwd()
-    save_dir = os.path.join(current_directory, r'results')
+    save_dir = os.path.join(current_directory, r'results/')
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
     # save_dir = Path(increment_path(Path(project) / name, exist_ok))  # increment run
@@ -68,6 +68,7 @@ def detect(source,weights,imgsz=640,
     if device.type != 'cpu':
         model(torch.zeros(1, 3, imgsz, imgsz).to(device).type_as(next(model.parameters())))  # run once
     t0 = time.time()
+    count = 0
     for path, img, im0s in dataset:
         img = torch.from_numpy(img).to(device)
         img = img.half() if half else img.float()  # uint8 to fp16/32
@@ -94,8 +95,8 @@ def detect(source,weights,imgsz=640,
             # else:
             p, s, im0, frame = path, '', im0s, getattr(dataset, 'frame', 0)
 
-            p = Path(p)  # to Path
-            save_path = str(save_dir / p.name)  # img.jpg
+            #p = Path(p)  # to Path
+            save_path = str(save_dir+str(count)+'.png')  # img.jpg
             s += '%gx%g ' % img.shape[2:]  # print string
             gn = torch.tensor(im0.shape)[[1, 0, 1, 0]]  # normalization gain whwh
             if len(det):
@@ -146,7 +147,7 @@ def detect(source,weights,imgsz=640,
                                 plot_one_box(xyxy, im0, label=label, color=colors[int(cls)], line_thickness=3)
                         else:
                             plot_one_box(xyxy, im0, label=label, color=colors[int(cls)], line_thickness=3)
-
+            count+=1
             # Print time (inference + NMS)
             print(f'{s}Done. ({t2 - t1:.3f}s)')
 
