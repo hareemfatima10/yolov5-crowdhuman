@@ -122,16 +122,22 @@ def detect(source,weights,imgsz=640,
                         label = f'{names[int(cls)]} {conf:.2f}'
                         if heads or person:
                             if 'head' in label and heads:
+                                print("--------HHERE---------")
                                 x1 = int(xyxy[0].item())
                                 y1 = int(xyxy[1].item())
                                 x2 = int(xyxy[2].item())
                                 y2 = int(xyxy[3].item())
                                 xmin, xmax, ymin, ymax = x1, x2, y1, y2
+                               
                                 x_center = np.average([xmin, xmax])
                                 y_center = np.average([ymin, ymax])
-                                size = max(xmax-xmin, ymax-ymin)*1.5
+                                size = max((xmax-xmin), (ymax-ymin))
                                 xmin, xmax = x_center-size/2, x_center+size/2
                                 ymin, ymax = y_center-size/2, y_center+size/2
+                                xmin -= 0.15 * (xmax - xmin)
+                                xmax += 0.15 * (xmax - xmin)
+                                ymin -= 0.15 * (ymax - ymin)
+                                ymax += 0.15 * (ymax - ymin)
                                 h, w, _ = im0.shape
                                 if xmax > w:
                                     xmin = xmin - (xmax-w)
@@ -142,7 +148,7 @@ def detect(source,weights,imgsz=640,
                                     ymax = h
                                 cropped_img = im0[int(ymin):int(ymax),int(xmin):int(xmax)]
                                 #cropped_img = im0[y1:y2, x1:x2]
-                                cv2.imwrite('test3.png',cropped_img)
+                                #cv2.imwrite('test3.png',cropped_img)
                                 #plot_one_box(xyxy, im0, label=label, color=colors[int(cls)], line_thickness=3)
                             if 'person' in label and person:
                                 plot_one_box(xyxy, im0, label=label, color=colors[int(cls)], line_thickness=3)
@@ -160,6 +166,8 @@ def detect(source,weights,imgsz=640,
             
             #Save results (image with detections)
             if save_img:
+                print("save_img")
+                print(cropped_img)
                 cv2.imwrite(save_path, cropped_img)
              # if save_txt or save_img:
              #    s = f"\n{len(list(save_dir.glob('labels/*.txt')))} labels saved to {save_dir / 'labels'}" if save_txt else ''
