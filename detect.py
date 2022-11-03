@@ -127,25 +127,44 @@ def detect(source,weights,imgsz=640,
                                 x2 = int(xyxy[2].item())
                                 y2 = int(xyxy[3].item())
                                 xmin, xmax, ymin, ymax = x1, x2, y1, y2
+<<<<<<< HEAD
+                                xmin -= abs(int(0.15 * (xmax - xmin)))
+                                xmax += abs(int(0.15 * (xmax - xmin)))
+                                ymin -= abs(int(0.15 * (ymax - ymin)))
+                                ymax += abs(int(0.15 * (ymax - ymin)))
+                                xmin, xmax, ymin, ymax = abs(xmin), abs(xmax), abs(ymin), abs(ymax)
                                 
+=======
+                                
+>>>>>>> f666b1ec6388af4e6496eb0e7356732f0390ce67
                                 x_center = np.average([xmin, xmax])
                                 y_center = np.average([ymin, ymax])
                                 size = max((xmax-xmin), (ymax-ymin))
+                               
                                 xmin, xmax = x_center-size/2, x_center+size/2
                                 ymin, ymax = y_center-size/2, y_center+size/2
+<<<<<<< HEAD
+                               
+=======
                                 
+>>>>>>> f666b1ec6388af4e6496eb0e7356732f0390ce67
                                 h, w, _ = im0.shape
-                                if xmax > w:
+                                if xmax >= w:
                                     xmin = xmin - (xmax-w)
                                     xmax = w
 
-                                if ymax > h:
+                                if ymax >= h:
                                     ymin = ymin - (ymax-h)
                                     ymax = h
+<<<<<<< HEAD
+                               
+                                print(int(xmin), int(xmax), int(ymin), int(ymax))
+=======
                                 xmin -= 0.15 * (xmax - xmin)
                                 xmax += 0.15 * (xmax - xmin)
                                 ymin -= 0.15 * (ymax - ymin)
                                 ymax += 0.15 * (ymax - ymin)
+>>>>>>> f666b1ec6388af4e6496eb0e7356732f0390ce67
                                 cropped_img = im0[int(ymin):int(ymax),int(xmin):int(xmax)]
                                 #cropped_img = im0[y1:y2, x1:x2]
                                 #cv2.imwrite('test3.png',cropped_img)
@@ -166,8 +185,6 @@ def detect(source,weights,imgsz=640,
             
             #Save results (image with detections)
             if save_img:
-                print("save_img")
-                print(cropped_img)
                 cv2.imwrite(save_path, cropped_img)
              # if save_txt or save_img:
              #    s = f"\n{len(list(save_dir.glob('labels/*.txt')))} labels saved to {save_dir / 'labels'}" if save_txt else ''
