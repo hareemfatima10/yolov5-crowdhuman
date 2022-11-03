@@ -41,6 +41,7 @@ def detect(source,weights,imgsz=640,
     model = attempt_load(weights, map_location=device)  # load FP32 model
     stride = int(model.stride.max())  # model stride
     imgsz = check_img_size(imgsz, s=stride)  # check img_size
+    cropped_img_arr = []
     if half:
         model.half()  # to FP16
 
@@ -150,22 +151,23 @@ def detect(source,weights,imgsz=640,
             count+=1
             # Print time (inference + NMS)
             print(f'{s}Done. ({t2 - t1:.3f}s)')
-
+            cropped_img_arr.append(cropped_img)
             # Stream results
             if view_img:
                 cv2_imshow(cropped_img)
                 cv2.waitKey(0)  # 1 millisecond
             
             
-        #Save results (image with detections)
+            #Save results (image with detections)
             if save_img:
                 cv2.imwrite(save_path, cropped_img)
-        # if save_txt or save_img:
-        #     s = f"\n{len(list(save_dir.glob('labels/*.txt')))} labels saved to {save_dir / 'labels'}" if save_txt else ''
-        #     print(f"Results saved to {save_dir}{s}")
+             # if save_txt or save_img:
+             #    s = f"\n{len(list(save_dir.glob('labels/*.txt')))} labels saved to {save_dir / 'labels'}" if save_txt else ''
+             #    print(f"Results saved to {save_dir}{s}")
     
     print(f'Done. ({time.time() - t0:.3f}s)')
-    return cropped_img
+    #print(cropped_img_arr)
+    return cropped_img_arr
 
 
 
@@ -175,9 +177,10 @@ def inference(source, weights, img_size=640, conf_thres=0.65, iou_thres=0.45, de
     with torch.no_grad():
         if update:  # update all models (to fix SourceChangeWarning)
             for weights in ['yolov5s.pt', 'yolov5m.pt', 'yolov5l.pt', 'yolov5x.pt']:
-                detect(source, weights, img_size, conf_thres, iou_thres, device,
+                result = detect(source, weights, img_size, conf_thres, iou_thres, device,
                        view_img,save_img, agnostic_nms, classes, project, name, augment, update, exist_ok, person, heads, save_txt)
                 strip_optimizer(weights)
         else:
-            detect(source, weights, img_size, conf_thres, iou_thres, device,
+            result = detect(source, weights, img_size, conf_thres, iou_thres, device,
                        view_img, save_img, agnostic_nms, classes,project, name, augment, update,exist_ok, person, heads,save_txt)
+    return result
